@@ -1,25 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 
-function App() {
+const baseURL = 'https://kuch.tk';
+const instance = axios.create({ baseURL });
+
+const App = () => {
+  const [url, setUrl] = useState(null);
+  const [shortUrl, setShortUrl] = useState(null);
+  const [text, setText] = useState();
+
+  useEffect(() => {
+    if (!url) { return };
+
+    const fetchData = async () => {
+      const result = await instance.post('/shorten', { url }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      setShortUrl(result.data);
+    };
+
+    fetchData();
+  }, [url]);
+
+  const handleChange = event => {
+    setShortUrl(null);
+    setText(event.target.value);
+  };
+
+  const handleSubmit = event => {
+    setUrl(text);
+    event.preventDefault();
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <input type="text" value={text} onChange={handleChange} placeholder="input url" className="urlinput" />
+          <input type="submit" value="Shorten" className="button" />
+        </div>
+        <div>
+          <a
+            className="App-link"
+            href={shortUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {shortUrl}
+          </a>
+        </div>
+      </form>
+    </div >
   );
 }
 
