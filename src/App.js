@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Loader from 'react-loader-spinner';
 import './App.css';
 
 const baseURL = 'https://kuch.tk';
@@ -9,6 +10,7 @@ const App = () => {
   const [url, setUrl] = useState(null);
   const [shortUrl, setShortUrl] = useState(null);
   const [text, setText] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!url) { return };
@@ -19,6 +21,7 @@ const App = () => {
       });
 
       setShortUrl(result.data);
+      setIsLoading(false);
     };
 
     fetchData();
@@ -30,6 +33,7 @@ const App = () => {
   };
 
   const handleSubmit = event => {
+    setIsLoading(true);
     setUrl(text);
     event.preventDefault();
   };
@@ -39,9 +43,10 @@ const App = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <input type="text" value={text} onChange={handleChange} placeholder="input url" className="urlinput" />
-          <input type="submit" value="Shorten" className="button" />
+          <input type="submit" value="Shorten" className="button" disabled={!text || isLoading} />
         </div>
         <div>
+          <Loader type="ThreeDots" color="#00BFFF" height={80} width={80} visible={isLoading} />
           <a
             className="App-link"
             href={shortUrl}
