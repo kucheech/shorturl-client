@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from 'react-loader-spinner';
+import { is_web_uri } from 'valid-url';
 import './App.css';
 
 const baseURL = 'https://kuch.tk';
@@ -13,7 +14,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!url) { return };
+    if (!is_web_uri(url)) { return };
 
     const fetchData = async () => {
       const result = await instance.post('/shorten', { url }, {
@@ -28,11 +29,16 @@ const App = () => {
   }, [url]);
 
   const handleChange = event => {
-    setShortUrl(null);
-    setText(event.target.value);
+    setText(event.target.value.trim());
   };
 
   const handleSubmit = event => {
+    if (!is_web_uri(text) || text === url) {
+      event.preventDefault();
+      return;
+    }
+
+    setShortUrl(null);
     setIsLoading(true);
     setUrl(text);
     event.preventDefault();
