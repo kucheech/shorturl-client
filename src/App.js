@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Loader from 'react-loader-spinner';
 import { is_web_uri } from 'valid-url';
@@ -13,7 +13,7 @@ const App = () => {
   const [text, setText] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
+  const generateShortUrl = useCallback(() => {
     if (!is_web_uri(url)) { return };
 
     const fetchData = async () => {
@@ -27,6 +27,10 @@ const App = () => {
 
     fetchData();
   }, [url]);
+
+  useEffect(() => {
+    generateShortUrl();
+  }, [generateShortUrl]);
 
   const handleChange = event => {
     setText(event.target.value.trim());
